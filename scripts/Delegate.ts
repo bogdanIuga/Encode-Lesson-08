@@ -11,7 +11,7 @@ async function main() {
     const parameters = process.argv.slice(2);
     if (!parameters || parameters.length < 1)
         throw new Error("Parameters not provided");
-    const proposalNumber = parameters[0];
+    const delegateTo = parameters[0];
 
     //configure provider
     const provider = new ethers.JsonRpcProvider(process.env.RPC_ENDPOINT_URL ?? "");
@@ -24,7 +24,7 @@ async function main() {
     const ballotFactory = new Ballot__factory(wallet);
     const ballotContract = ballotFactory.attach(CONTRACT_ADDRESS) as Ballot;
 
-    const tx = await ballotContract.vote(proposalNumber);
+    const tx = await ballotContract.delegate(delegateTo);
     const receipt = await tx.wait();
     console.log(`Transaction completed ${receipt?.hash}`)
 }

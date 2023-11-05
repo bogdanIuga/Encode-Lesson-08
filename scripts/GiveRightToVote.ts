@@ -7,11 +7,10 @@ dotenv.config();
 const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS ?? "";
 
 async function main() {
-    //receive parameters
     const parameters = process.argv.slice(2);
-    if (!parameters || parameters.length < 1)
+    if (!parameters || parameters.length < 0)
         throw new Error("Parameters not provided");
-    const proposalNumber = parameters[0];
+    const address = parameters[0];
 
     //configure provider
     const provider = new ethers.JsonRpcProvider(process.env.RPC_ENDPOINT_URL ?? "");
@@ -20,11 +19,12 @@ async function main() {
     const wallet = new ethers.Wallet(process.env.PRIVATE_KEY ?? "", provider);
     console.log(`Using address ${wallet.address}`);
 
-    //attach contract
+    //attach SC
     const ballotFactory = new Ballot__factory(wallet);
     const ballotContract = ballotFactory.attach(CONTRACT_ADDRESS) as Ballot;
 
-    const tx = await ballotContract.vote(proposalNumber);
+    //give right to vote
+    const tx = await ballotContract.giveRightToVote(address);
     const receipt = await tx.wait();
     console.log(`Transaction completed ${receipt?.hash}`)
 }
